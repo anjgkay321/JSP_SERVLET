@@ -4,6 +4,12 @@ public class UserDto {
 	private String userid;
 	private String password;
 	private String role;
+	
+	
+	public UserDto() {
+		
+	}
+	
 	public String getUserid() {
 		return userid;
 	}
