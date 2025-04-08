@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,5 +101,101 @@ public class DBUtils {
 		
 		return result;
 		
+	}
+	public int deleteUser(String userid) throws Exception {
+		pstmt = conn.prepareStatement("delete from tbl_user where userid=?");
+		pstmt.setString(1, userid);
+		int result = pstmt.executeUpdate();
+		
+		conn.commit();
+		pstmt.close();
+		
+		return result;
+	}
+	public List<OrderDto> selectAllOrder() throws Exception {
+		//SQL
+//		select category,sum(price * quantity) from tbl_order
+//		group by category
+//		having sum(price*quantity)>=50000
+//		order by sum(price*quantity)desc;
+		
+		String sql="select category,sum(price * quantity) from tbl_order"
+				+ " group by category"
+				+ " having sum(price*quantity)>=50000"
+				+ " order by sum(price*quantity)desc";
+		pstmt = conn.prepareStatement(sql);
+		rs = pstmt.executeQuery();
+		List<OrderDto> list = new ArrayList();
+		OrderDto orderDto = null;
+
+		if (rs != null) {
+			while (rs.next()) {
+				orderDto = new OrderDto();
+				orderDto.setCategory(rs.getString(1));
+				orderDto.setSum(rs.getInt(2));
+				list.add(orderDto);
+			}
+		}
+		rs.close();
+		pstmt.close();
+		return list;
+	}
+	public List<addrDto> selectAlladdr() throws Exception {
+		//SQL
+		/*
+		 * select addr , order_date ,sum(price * quantity) from tbl_user u join
+		 * tbl_order o on u.userid = o.userid group by addr,order_date order by addr
+		 * asc,sum(price*quantity) desc;
+		 */
+		
+		String sql="select addr , order_date ,sum(price * quantity) from tbl_user u join"
+				+ " tbl_order o on u.userid = o.userid group by addr,order_date order by addr"
+				+ " asc,sum(price*quantity) desc";
+		pstmt = conn.prepareStatement(sql);
+		rs = pstmt.executeQuery();
+		List<addrDto> list = new ArrayList();
+		addrDto addrDto = null;
+
+		if (rs != null) {
+			while (rs.next()) {
+				addrDto = new addrDto();
+				addrDto.setAddr(rs.getString(1));
+				addrDto.setOrder_date(rs.getDate(2).toLocalDate());
+				addrDto.setSum(rs.getInt(3));
+				list.add(addrDto);
+			}
+		}
+		rs.close();
+		pstmt.close();
+		return list;
+	}
+	public List<priceDto> selectAllprice() throws Exception {
+		//SQL
+		/*
+		 * select order_date,round(avg(price*quantity),2) from tbl_order group by
+		 * order_date;
+		 */
+		
+		String sql="select order_date,round(avg(price*quantity),2)"
+				+ " from tbl_order"
+				+ " group by order_date";
+		pstmt = conn.prepareStatement(sql);
+		rs = pstmt.executeQuery();
+		List<priceDto> list = new ArrayList();
+		priceDto priceDto = null;
+
+		if (rs != null) {
+			while (rs.next()) {
+				priceDto = new priceDto();
+				Timestamp timestamp = rs.getTimestamp(1);
+				LocalDate priceDate = timestamp.toLocalDateTime().toLocalDate();
+				priceDto.setOrder_date(priceDate);
+				priceDto.setRound(rs.getDouble(2));
+				list.add(priceDto);
+			}
+		}
+		rs.close();
+		pstmt.close();
+		return list;
 	}
 }

@@ -33,27 +33,30 @@ List<UserDto> list = dbUtils.selectAllUser();
 			<th>삭제</th>
 		</tr>
 		<%
-			for (UserDto dto : list) {
+		for (UserDto dto : list) {
 		%>
-			<tr>
-				<td><%=dto.getUserid() %></td>
-				<td><%=dto.getPassword() %></td>
-				<td><%=dto.getRole() %></td>
-				<td>
-					<a href="./update_form.jsp?userid=<%=dto.getUserid()%>">수정하기</a>
-				</td>
-				<td>
-					<a href="./delect.jsp?userid=<%=dto.getUserid()%>">삭제하기</a>
-				</td>
+		<tr>
+			<td><%=dto.getUserid()%></td>
+			<td><%=dto.getPassword()%></td>
+			<td><%=dto.getRole()%></td>
+			<td><a href="./update_form.jsp?userid=<%=dto.getUserid()%>">수정하기</a>
+			</td>
+			<td><a href="javascript:deleteFunc('<%=dto.getUserid()%>')">삭제하기</a>
+				<button onClick="deleteFunc('<%=dto.getUserid()%>')">삭제버튼</button></td>
 
-			</tr>
+		</tr>
 		<%
 		}
 		%>
-
-
-
-
 	</table>
+
+	<script>
+		function deleteFunc(userid) {
+			const isDelete = confirm("정말 삭제하시겠습니까?");
+			console.log('userid :', userid, "isDelete", isDelete);
+			if (isDelete)
+				location.href = `./delect.jsp?userid=` + userid;
+		}
+	</script>
 </body>
 </html>
